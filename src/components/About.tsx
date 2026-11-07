@@ -77,7 +77,7 @@ export default function About({ darkMode }: AboutProps) {
         educationLabel: 'ACADEMIC BACKGROUND',
         educationTitle: 'Education',
         university: 'Taibah University',
-        bachelor: 'Science in Computer Science',
+        bachelor: ' Computer Science',
         diploma: 'Programming and Information Systems',
         bachelorType: "Bachelor's Degree",
         diplomaType: 'Intermediate Diploma',
