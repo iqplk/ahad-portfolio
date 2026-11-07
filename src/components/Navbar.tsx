@@ -25,17 +25,12 @@ export default function Navbar({
   const location = useLocation()
 
   const headerRef = useRef<HTMLElement>(null)
-
   const [menuOpen, setMenuOpen] = useState(false)
 
   const language =
     i18n.resolvedLanguage === 'ar' ? 'ar' : 'en'
 
   const isHomePage = location.pathname === '/'
-
-  // ==========================================
-  // Navigation Labels
-  // ==========================================
 
   const getNavigationLabel = (id: string) => {
     if (id === 'skills') {
@@ -45,17 +40,9 @@ export default function Navbar({
     return t(`nav.${id}`)
   }
 
-  // ==========================================
-  // Navigation Links
-  // ==========================================
-
   const getNavigationLink = (id: string) => {
     return isHomePage ? `#${id}` : `/#${id}`
   }
-
-  // ==========================================
-  // Smart Scroll
-  // ==========================================
 
   const scrollToSection = (
     id: string,
@@ -66,7 +53,6 @@ export default function Navbar({
         top: 0,
         behavior,
       })
-
       return
     }
 
@@ -74,23 +60,17 @@ export default function Navbar({
 
     if (!section) return
 
-    // Scroll to the section heading instead of
-    // its outer container to avoid large empty space.
-
     const heading = section.querySelector('h2')
-
     const target = heading || section
 
     const headerHeight =
       headerRef.current?.getBoundingClientRect().height ?? 80
 
-    const spacing = 24
-
     const targetPosition =
       target.getBoundingClientRect().top +
       window.scrollY -
       headerHeight -
-      spacing
+      24
 
     window.scrollTo({
       top: Math.max(0, targetPosition),
@@ -98,27 +78,15 @@ export default function Navbar({
     })
   }
 
-  // ==========================================
-  // Handle Navigation
-  // ==========================================
-
   const handleNavigation = (id: string) => {
     setMenuOpen(false)
 
     if (isHomePage) {
-      // Wait until React Router finishes its
-      // default hash navigation before adjusting
-      // the position below the navbar.
-
       window.setTimeout(() => {
         scrollToSection(id, 'smooth')
       }, 180)
     }
   }
-
-  // ==========================================
-  // Navigation From Project Pages
-  // ==========================================
 
   useEffect(() => {
     if (
@@ -139,16 +107,11 @@ export default function Navbar({
     return () => window.clearTimeout(timer)
   }, [location.pathname, location.hash])
 
-  // ==========================================
-  // Change Language
-  // ==========================================
-
   const changeLanguage = () => {
     const nextLanguage =
       language === 'en' ? 'ar' : 'en'
 
     void i18n.changeLanguage(nextLanguage)
-
     setMenuOpen(false)
   }
 
@@ -161,25 +124,27 @@ export default function Navbar({
           : 'border-slate-200 bg-white/80'
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-12">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-6 lg:px-12">
 
-        {/* ================================== */}
-        {/* Logo */}
-        {/* ================================== */}
+        {/* LOGO */}
 
         <Link
-          to="/#home"
+          to="/"
           onClick={() => handleNavigation('home')}
-          className="text-2xl font-black tracking-[-0.08em]"
-          aria-label="Ahad Portfolio - Home"
+          className="inline-flex shrink-0 items-center"
+          aria-label="Ahad Al Harbi Portfolio - Home"
         >
-          AHAD
-          <span className="text-violet-500">.</span>
+          <span
+            className="text-[29px] font-medium leading-none tracking-[-0.075em] sm:text-[33px]"
+            style={{
+              fontFamily: "'Outfit', sans-serif",
+            }}
+          >
+            AHAD
+          </span>
         </Link>
 
-        {/* ================================== */}
-        {/* Desktop Navigation */}
-        {/* ================================== */}
+        {/* DESKTOP NAVIGATION */}
 
         <nav
           className="hidden items-center gap-9 md:flex"
@@ -199,13 +164,11 @@ export default function Navbar({
           ))}
         </nav>
 
-        {/* ================================== */}
-        {/* Controls */}
-        {/* ================================== */}
+        {/* CONTROLS */}
 
         <div className="flex items-center gap-3">
 
-          {/* Language */}
+          {/* LANGUAGE */}
 
           <button
             type="button"
@@ -223,15 +186,12 @@ export default function Navbar({
             }
           >
             <Globe size={16} />
-
             <span>
               {language === 'en' ? 'AR' : 'EN'}
             </span>
           </button>
 
-          {/* ================================== */}
-          {/* Theme */}
-          {/* ================================== */}
+          {/* THEME */}
 
           <button
             type="button"
@@ -259,9 +219,7 @@ export default function Navbar({
             )}
           </button>
 
-          {/* ================================== */}
-          {/* Mobile Menu Button */}
-          {/* ================================== */}
+          {/* MOBILE MENU BUTTON */}
 
           <button
             type="button"
@@ -286,9 +244,7 @@ export default function Navbar({
         </div>
       </div>
 
-      {/* ================================== */}
-      {/* Mobile Navigation */}
-      {/* ================================== */}
+      {/* MOBILE NAVIGATION */}
 
       <AnimatePresence>
         {menuOpen && (
@@ -317,20 +273,16 @@ export default function Navbar({
             aria-label="Mobile navigation"
           >
             <div className="flex flex-col gap-2 px-6 py-5">
-
               {navigation.map((item) => (
                 <Link
                   key={item.id}
                   to={getNavigationLink(item.id)}
-                  onClick={() =>
-                    handleNavigation(item.id)
-                  }
+                  onClick={() => handleNavigation(item.id)}
                   className="rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-violet-500/10 hover:text-violet-400"
                 >
                   {getNavigationLabel(item.id)}
                 </Link>
               ))}
-
             </div>
           </motion.nav>
         )}

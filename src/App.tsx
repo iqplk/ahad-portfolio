@@ -1,26 +1,13 @@
-import { useEffect, useRef, useState, type MouseEvent } from 'react'
-
-import {
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-} from 'motion/react'
-
+import { useEffect, useState } from 'react'
+import { motion, useReducedMotion } from 'motion/react'
 import {
   ArrowDown,
-  ArrowRight,
   ArrowUpRight,
+  ArrowRight,
   Mail,
-  Layers3,
-  MousePointer2,
-  Palette,
-  Code2,
 } from 'lucide-react'
-
 import { FaGithub, FaLinkedin } from 'react-icons/fa6'
 import { useTranslation } from 'react-i18next'
-
 import {
   BrowserRouter,
   Routes,
@@ -38,7 +25,7 @@ import RihalProject from './pages/RihalProject'
 import FaseelahProject from './pages/FaseelahProject'
 
 // ==========================================
-// Scroll To Top
+// SCROLL MANAGEMENT
 // ==========================================
 
 function ScrollToTop() {
@@ -47,9 +34,8 @@ function ScrollToTop() {
   useEffect(() => {
     if (hash) {
       const timer = window.setTimeout(() => {
-        const element = document.getElementById(
-          decodeURIComponent(hash.substring(1))
-        )
+        const id = decodeURIComponent(hash.slice(1))
+        const element = document.getElementById(id)
 
         if (element) {
           element.scrollIntoView({
@@ -57,7 +43,7 @@ function ScrollToTop() {
             block: 'start',
           })
         }
-      }, 100)
+      }, 150)
 
       return () => window.clearTimeout(timer)
     }
@@ -73,7 +59,7 @@ function ScrollToTop() {
 }
 
 // ==========================================
-// Home Page
+// HOME PAGE
 // ==========================================
 
 type HomePageProps = {
@@ -85,47 +71,58 @@ function HomePage({
   darkMode,
   setDarkMode,
 }: HomePageProps) {
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
 
   const isArabic = i18n.resolvedLanguage === 'ar'
-
-  const showcaseRef = useRef<HTMLElement>(null)
   const reduceMotion = useReducedMotion()
 
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
+  // ==========================================
+  // BILINGUAL CONTENT
+  // ==========================================
 
-  const rotateX = useSpring(mouseY, {
-    stiffness: 100,
-    damping: 25,
-  })
+  const copy = isArabic
+    ? {
+        intro: 'مرحبًا، أنا',
+        name: 'عهد الحربي',
+        role: 'مطوّرة واجهات أمامية | مصمّمة UI/UX',
 
-  const rotateY = useSpring(mouseX, {
-    stiffness: 100,
-    damping: 25,
-  })
+        description:
+          'أحوّل الأفكار إلى تجارب رقمية مميزة، تجمع بين جمال التصميم وسهولة الاستخدام والتفاعل السلس.',
 
-  const handleMouseMove = (e: MouseEvent<HTMLElement>) => {
-    if (!showcaseRef.current || reduceMotion) return
+        work: 'استكشف أعمالي',
+        contact: 'تواصل معي',
+        scroll: 'اكتشف المزيد',
+        detail: 'التفاصيل تصنع الفارق',
+      }
+    : {
+        intro: "Hello, I'm",
+        name: 'Ahad Al Harbi',
+        role: 'Frontend Developer | UI/UX Designer',
 
-    const rect = showcaseRef.current.getBoundingClientRect()
+        description:
+          'I turn ideas into distinctive digital experiences, combining thoughtful design, intuitive usability, and seamless interactions.',
 
-    const x = (e.clientX - rect.left) / rect.width - 0.5
-    const y = (e.clientY - rect.top) / rect.height - 0.5
+        work: 'Explore my work',
+        contact: "Let's connect",
+        scroll: 'SCROLL TO EXPLORE',
+        detail: 'THE DETAILS MAKE THE DIFFERENCE',
+      }
 
-    mouseX.set(x * 13)
-    mouseY.set(-y * 13)
-  }
+  const textFont = isArabic
+    ? "'IBM Plex Sans Arabic', 'Noto Sans Arabic', sans-serif"
+    : "'Outfit', sans-serif"
 
-  const handleMouseLeave = () => {
-    mouseX.set(0)
-    mouseY.set(0)
-  }
+  // ==========================================
+  // ANIMATIONS
+  // ==========================================
 
   const reveal = (delay = 0) => ({
     initial: reduceMotion
       ? false
-      : { opacity: 0, y: 28 },
+      : {
+          opacity: 0,
+          y: 24,
+        },
 
     animate: {
       opacity: 1,
@@ -135,7 +132,7 @@ function HomePage({
     transition: {
       duration: 0.8,
       delay,
-      ease: 'easeOut' as const,
+      ease: [0.22, 1, 0.36, 1] as const,
     },
   })
 
@@ -143,438 +140,258 @@ function HomePage({
     <div
       className={`relative min-h-screen overflow-x-hidden transition-colors duration-500 ${
         darkMode
-          ? 'bg-[#090e1c] text-white'
-          : 'bg-[#f8f9fd] text-[#111827]'
+          ? 'bg-[#090b17] text-[#f8f7ff]'
+          : 'bg-[#f7f6fb] text-[#171426]'
       }`}
     >
-      {/* Background */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-60 right-[-180px] h-[650px] w-[650px] rounded-full bg-violet-600/10 blur-[130px]" />
+      {/* ======================================
+          BACKGROUND
+      ====================================== */}
 
-        <div className="absolute bottom-0 left-[-200px] h-[500px] w-[500px] rounded-full bg-indigo-600/10 blur-[130px]" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+      >
+        <div className="absolute -right-52 top-10 h-[600px] w-[600px] rounded-full bg-[#8b5cf6]/10 blur-[150px]" />
+
+        <div className="absolute -left-64 top-[650px] h-[500px] w-[500px] rounded-full bg-[#6366f1]/10 blur-[140px]" />
       </div>
 
-      {/* Navbar */}
+      {/* ======================================
+          NAVBAR - HOME ONLY
+      ====================================== */}
+
       <Navbar
         darkMode={darkMode}
         setDarkMode={setDarkMode}
       />
 
-      {/* Hero Section */}
+      {/* ======================================
+          HERO SECTION
+      ====================================== */}
+
       <main
         id="home"
-        className="relative z-10 mx-auto grid min-h-[calc(100vh-110px)] max-w-7xl items-center gap-12 px-6 pb-24 pt-10 lg:grid-cols-2 lg:gap-8 lg:px-12"
+        dir={isArabic ? 'rtl' : 'ltr'}
+        className="relative z-10 mx-auto w-full max-w-[1440px] px-5 pb-12 pt-12 sm:px-8 sm:pb-16 sm:pt-16 lg:px-14 lg:pb-20 lg:pt-20"
       >
-        {/* Left Side */}
-        <section>
-          <motion.div
-            {...reveal(0.1)}
-            className="mb-8 inline-flex items-center gap-3 rounded-full border border-violet-500/20 bg-violet-500/5 px-4 py-2"
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-violet-400" />
-            </span>
+        <div className="mx-auto w-full max-w-[1050px]">
 
-            <span className="text-xs font-semibold uppercase tracking-[0.15em] text-violet-400">
-              {t('hero.role')}
-            </span>
-          </motion.div>
+          {/* ==================================
+              INTRO
+          ================================== */}
+
+          <motion.p
+            {...reveal(0.05)}
+            className={`mb-3 text-[15px] font-normal sm:text-lg ${
+              darkMode
+                ? 'text-[#b4b1c9]'
+                : 'text-[#69657c]'
+            }`}
+            style={{ fontFamily: textFont }}
+          >
+            {copy.intro}
+          </motion.p>
+
+          {/* ==================================
+              FULL NAME
+          ================================== */}
+
+          <motion.h1
+            {...reveal(0.13)}
+            className={`max-w-full font-semibold ${
+              isArabic
+                ? 'text-[clamp(2.65rem,8vw,5.6rem)] leading-[1.35] tracking-[-0.035em]'
+                : 'text-[clamp(2.8rem,7vw,6.5rem)] leading-[1.12] tracking-[-0.065em]'
+            }`}
+            style={{ fontFamily: textFont }}
+          >
+            {copy.name}
+          </motion.h1>
+
+          {/* ==================================
+              SPECIALIZATION
+          ================================== */}
 
           <motion.p
             {...reveal(0.2)}
-            className={`mb-3 text-lg ${
+            className={`mt-3 max-w-full text-[12px] font-medium leading-[1.8] sm:mt-4 sm:text-[14px] ${
               darkMode
-                ? 'text-slate-400'
-                : 'text-slate-600'
+                ? 'text-[#b79aff]'
+                : 'text-[#7852c5]'
             }`}
+            style={{ fontFamily: textFont }}
           >
-            {t('hero.greeting')}
+            {copy.role}
           </motion.p>
 
-          <motion.h1
-            {...reveal(0.3)}
-            className="text-[clamp(5rem,11vw,9rem)] font-black leading-[0.95] tracking-[-0.09em]"
-          >
-            Ahad
-            <span className="text-violet-500">.</span>
-          </motion.h1>
-
-          <motion.h2
-            {...reveal(0.4)}
-            className="mt-7 max-w-xl text-2xl font-semibold leading-snug tracking-tight sm:text-3xl"
-          >
-            {t('hero.headline1')}
-
-            <br />
-
-            <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-              {t('hero.headline2')}
-            </span>
-          </motion.h2>
+          {/* ==================================
+              DESCRIPTION
+          ================================== */}
 
           <motion.p
-            {...reveal(0.5)}
-            className={`mt-6 max-w-lg text-base leading-8 ${
+            {...reveal(0.3)}
+            className={`mt-7 max-w-[610px] text-[14px] leading-[2] sm:mt-9 sm:text-[16px] ${
               darkMode
-                ? 'text-slate-400'
-                : 'text-slate-600'
+                ? 'text-[#a5a3b9]'
+                : 'text-[#686477]'
             }`}
+            style={{ fontFamily: textFont }}
           >
-            {t('hero.description')}
+            {copy.description}
           </motion.p>
 
-          {/* Buttons */}
+          {/* ==================================
+              ACTION BUTTONS
+          ================================== */}
+
           <motion.div
-            {...reveal(0.6)}
-            className="mt-9 flex flex-wrap items-center gap-4"
+            {...reveal(0.42)}
+            className="mt-8 flex flex-wrap items-center gap-3 sm:mt-10"
           >
+            {/* PROJECTS BUTTON */}
+
             <a
               href="#projects"
-              className="group flex items-center gap-3 rounded-xl bg-violet-600 px-7 py-4 text-sm font-semibold text-white shadow-[0_10px_35px_rgba(124,58,237,0.25)] transition hover:-translate-y-1 hover:bg-violet-500"
+              className="group inline-flex min-h-[52px] items-center justify-center gap-4 rounded-full bg-[#8b5cf6] px-6 text-[13px] font-semibold text-white shadow-[0_15px_40px_rgba(139,92,246,0.2)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#9d73ff] hover:shadow-[0_20px_50px_rgba(139,92,246,0.3)] sm:px-7 sm:text-sm"
             >
-              {t('hero.projectsButton')}
+              {copy.work}
 
               <ArrowUpRight
-                size={18}
-                className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"
+                size={17}
+                className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
               />
             </a>
 
+            {/* CONTACT BUTTON */}
+
             <a
               href="#contact"
-              className={`flex items-center gap-3 rounded-xl border px-7 py-4 text-sm font-semibold transition hover:-translate-y-1 ${
+              className={`group inline-flex min-h-[52px] items-center justify-center gap-3 rounded-full border px-6 text-[13px] font-semibold transition-all duration-300 hover:-translate-y-1 sm:text-sm ${
                 darkMode
-                  ? 'border-white/10 hover:border-violet-500/40'
-                  : 'border-slate-200 hover:border-violet-400'
+                  ? 'border-white/15 hover:border-[#a78bfa]/50 hover:bg-white/5'
+                  : 'border-[#171426]/15 hover:border-[#8b5cf6]/50 hover:bg-[#8b5cf6]/5'
               }`}
             >
-              {t('hero.contactButton')}
+              {copy.contact}
 
-              <ArrowRight size={17} />
+              <ArrowRight
+                size={16}
+                className="transition-transform duration-300 group-hover:translate-x-1"
+              />
             </a>
           </motion.div>
 
-          {/* Social Links */}
+          {/* ==================================
+              SOCIAL LINKS
+          ================================== */}
+
           <motion.div
-            {...reveal(0.8)}
-            className="mt-14 flex items-center gap-5"
+            {...reveal(0.5)}
+            className="mt-9 flex items-center gap-6 sm:mt-11"
           >
-            <div className="flex items-center gap-4">
+            {/* GITHUB */}
 
-              {/* GitHub */}
-              <a
-                href="https://github.com/iqplk"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="text-slate-400 transition hover:-translate-y-1 hover:text-violet-400"
-              >
-                <FaGithub size={20} />
-              </a>
+            <a
+              href="https://github.com/iqplk"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+              className={`transition-all duration-300 hover:-translate-y-1 hover:text-[#a78bfa] ${
+                darkMode
+                  ? 'text-[#85829e]'
+                  : 'text-[#77728d]'
+              }`}
+            >
+              <FaGithub size={20} />
+            </a>
 
-              {/* LinkedIn */}
-              <a
-                href="https://www.linkedin.com/in/ahad-alharbi-911b95361"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="text-slate-400 transition hover:-translate-y-1 hover:text-violet-400"
-              >
-                <FaLinkedin size={20} />
-              </a>
+            {/* LINKEDIN */}
 
-              {/* Email */}
-              <a
-                href="mailto:ahadmalharbi@outlook.com"
-                aria-label="Email"
-                className="text-slate-400 transition hover:-translate-y-1 hover:text-violet-400"
-              >
-                <Mail size={20} />
-              </a>
-            </div>
+            <a
+              href="https://www.linkedin.com/in/ahad-alharbi-911b95361"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className={`transition-all duration-300 hover:-translate-y-1 hover:text-[#a78bfa] ${
+                darkMode
+                  ? 'text-[#85829e]'
+                  : 'text-[#77728d]'
+              }`}
+            >
+              <FaLinkedin size={20} />
+            </a>
 
-            <span className="h-px w-10 bg-slate-700" />
+            {/* EMAIL */}
 
-            <span className="text-xs uppercase tracking-widest text-slate-500">
-              {isArabic
-                ? 'لنصنع شيئًا مميزًا'
-                : "Let's build something great"}
-            </span>
+            <a
+              href="mailto:ahadmalharbi@outlook.com"
+              aria-label="Email"
+              className={`transition-all duration-300 hover:-translate-y-1 hover:text-[#a78bfa] ${
+                darkMode
+                  ? 'text-[#85829e]'
+                  : 'text-[#77728d]'
+              }`}
+            >
+              <Mail size={20} />
+            </a>
           </motion.div>
-        </section>
+        </div>
 
-        {/* Interactive UI Showcase */}
-        <motion.section
-          {...reveal(0.4)}
-          ref={showcaseRef}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          className="relative flex min-h-[480px] items-center justify-center lg:min-h-[600px]"
-          style={{ perspective: 1200 }}
-          aria-label="Interactive frontend design showcase"
+        {/* ======================================
+            HERO BOTTOM
+        ====================================== */}
+
+        <motion.div
+          {...reveal(0.6)}
+          className={`mx-auto mt-14 flex w-full max-w-[1050px] flex-wrap items-center justify-between gap-5 border-t pt-5 sm:mt-16 ${
+            darkMode
+              ? 'border-white/10'
+              : 'border-[#171426]/10'
+          }`}
         >
-          <motion.div
-            style={{
-              rotateX,
-              rotateY,
-              transformStyle: 'preserve-3d',
-            }}
-            className="relative w-full max-w-[510px]"
+          <span
+            className={`text-[10px] font-medium uppercase tracking-[0.18em] ${
+              darkMode
+                ? 'text-white/35'
+                : 'text-[#171426]/45'
+            }`}
           >
-            {/* Main UI Window */}
-            <div
-              className={`relative overflow-hidden rounded-3xl border p-5 shadow-[0_35px_100px_rgba(0,0,0,0.35)] backdrop-blur-2xl sm:p-6 ${
-                darkMode
-                  ? 'border-white/10 bg-[#151b2c]/95'
-                  : 'border-slate-200 bg-white/95'
-              }`}
-            >
-              {/* Window Header */}
-              <div className="mb-7 flex items-center justify-between">
-                <div className="flex gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full bg-rose-400" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                </div>
+            {copy.detail}
+          </span>
 
-                <span className="text-[10px] uppercase tracking-[0.2em] text-slate-500">
-                  {isArabic
-                    ? 'مساحة التصميم'
-                    : 'Design Workspace'}
-                </span>
+          <a
+            href="#about"
+            className={`group flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.16em] transition-colors hover:text-[#a78bfa] ${
+              darkMode
+                ? 'text-white/45'
+                : 'text-[#171426]/50'
+            }`}
+          >
+            {copy.scroll}
 
-                <Layers3
-                  size={16}
-                  className="text-violet-400"
-                />
-              </div>
-
-              {/* UI Preview */}
-              <div className="rounded-2xl bg-gradient-to-br from-[#30205d] via-[#191a43] to-[#101a3e] p-6 text-white sm:p-8">
-                <div className="mb-12 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="h-7 w-7 rounded-lg bg-violet-400/30" />
-
-                    <span className="text-xs font-bold tracking-wide">
-                      studio.
-                    </span>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <span className="h-1.5 w-8 rounded bg-white/30" />
-                    <span className="h-1.5 w-5 rounded bg-white/20" />
-                    <span className="h-1.5 w-5 rounded bg-white/20" />
-                  </div>
-                </div>
-
-                <div className="mb-5 inline-flex rounded-full border border-violet-300/20 px-3 py-1 text-[10px] text-violet-200">
-                  {isArabic
-                    ? 'تجارب رقمية إبداعية'
-                    : 'Creative Digital Experiences'}
-                </div>
-
-                <div className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
-                  {isArabic
-                    ? 'تصميم يصنع'
-                    : 'Design that'}
-
-                  <br />
-
-                  {isArabic
-                    ? 'الاختلاف.'
-                    : 'feels different.'}
-                </div>
-
-                <p className="mt-4 max-w-[250px] text-xs leading-6 text-violet-200/70">
-                  {isArabic
-                    ? 'حين يلتقي الإبداع البصري بالتفاعل المدروس.'
-                    : 'Where visual creativity meets thoughtful interaction.'}
-                </p>
-
-                <div className="mt-7 flex items-center gap-2">
-                  <span className="rounded-lg bg-violet-500 px-4 py-2 text-[10px] font-semibold">
-                    {isArabic
-                      ? 'استكشف التصميم'
-                      : 'Explore Design'}
-                  </span>
-
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/20">
-                    <ArrowUpRight size={13} />
-                  </span>
-                </div>
-              </div>
-
-              {/* Mini Panels */}
-              <div className="mt-5 grid grid-cols-3 gap-3">
-                {[
-                  {
-                    icon: Palette,
-                    label: isArabic
-                      ? 'تصميم الواجهات'
-                      : 'UI Design',
-                    value: isArabic
-                      ? 'إبداعي'
-                      : 'Creative',
-                  },
-                  {
-                    icon: Code2,
-                    label: isArabic
-                      ? 'تطوير الواجهات'
-                      : 'Frontend',
-                    value: isArabic
-                      ? 'حديث'
-                      : 'Modern',
-                  },
-                  {
-                    icon: Layers3,
-                    label: isArabic
-                      ? 'التجربة'
-                      : 'Experience',
-                    value: isArabic
-                      ? 'سلسة'
-                      : 'Seamless',
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.label}
-                    className={`rounded-xl border p-3 ${
-                      darkMode
-                        ? 'border-white/5 bg-white/[0.03]'
-                        : 'border-slate-100 bg-slate-50'
-                    }`}
-                  >
-                    <item.icon
-                      size={16}
-                      className="mb-3 text-violet-400"
-                    />
-
-                    <p className="text-[9px] text-slate-500">
-                      {item.label}
-                    </p>
-
-                    <p className="mt-1 text-[11px] font-semibold">
-                      {item.value}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Floating Interactive Panel */}
-            <motion.div
-              animate={
-                reduceMotion
-                  ? undefined
-                  : { y: [0, -12, 0] }
-              }
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-              className={`absolute -right-3 top-24 hidden rounded-2xl border p-4 shadow-2xl sm:block lg:-right-10 ${
-                darkMode
-                  ? 'border-white/10 bg-[#20263a]'
-                  : 'border-slate-200 bg-white'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/20">
-                  <MousePointer2
-                    className="text-violet-400"
-                    size={20}
-                  />
-                </div>
-
-                <div>
-                  <p className="text-[11px] font-semibold">
-                    {isArabic
-                      ? 'واجهات تفاعلية'
-                      : 'Interactive UI'}
-                  </p>
-
-                  <p className="text-[10px] text-slate-500">
-                    {isArabic
-                      ? 'صُممت بعناية'
-                      : 'Crafted with precision'}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Floating Design System */}
-            <motion.div
-              animate={
-                reduceMotion
-                  ? undefined
-                  : { y: [0, 10, 0] }
-              }
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-              className={`absolute -bottom-8 -left-3 hidden rounded-2xl border p-4 shadow-2xl sm:block lg:-left-10 ${
-                darkMode
-                  ? 'border-white/10 bg-[#20263a]'
-                  : 'border-slate-200 bg-white'
-              }`}
-            >
-              <p className="mb-3 text-[10px] font-semibold text-slate-400">
-                {isArabic
-                  ? 'نظام التصميم'
-                  : 'Design System'}
-              </p>
-
-              <div className="flex gap-2">
-                {[
-                  '#8B5CF6',
-                  '#6366F1',
-                  '#C4B5FD',
-                  '#E2E8F0',
-                ].map((color) => (
-                  <span
-                    key={color}
-                    className="h-7 w-7 rounded-lg"
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
-              </div>
-            </motion.div>
-          </motion.div>
-        </motion.section>
-
-        {/* Scroll Indicator */}
-        <motion.a
-          {...reveal(1)}
-          href="#about"
-          className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 items-center gap-3 text-xs uppercase tracking-[0.2em] text-slate-500 lg:flex"
-        >
-          {isArabic
-            ? 'مرر للاستكشاف'
-            : 'Scroll to explore'}
-
-          <ArrowDown size={15} />
-        </motion.a>
+            <ArrowDown
+              size={14}
+              className="transition-transform group-hover:translate-y-1"
+            />
+          </a>
+        </motion.div>
       </main>
 
-      {/* About Me Section */}
+      {/* ======================================
+          OTHER SECTIONS
+      ====================================== */}
+
       <About darkMode={darkMode} />
-
-      {/* Skills & Technologies Section */}
       <Skills darkMode={darkMode} />
-
-      {/* Featured Projects Section */}
       <Projects darkMode={darkMode} />
-
-      {/* Contact Section */}
       <Contact darkMode={darkMode} />
     </div>
   )
 }
 
 // ==========================================
-// App Routes
+// APP ROUTES
 // ==========================================
 
 function App() {
@@ -585,7 +402,8 @@ function App() {
       <ScrollToTop />
 
       <Routes>
-        {/* Home Page */}
+        {/* HOME PAGE */}
+
         <Route
           path="/"
           element={
@@ -596,33 +414,21 @@ function App() {
           }
         />
 
-        {/* Rihal Project Page */}
+        {/* RIHAL PROJECT - NO NAVBAR */}
+
         <Route
           path="/projects/rihal"
           element={
-            <>
-              <Navbar
-                darkMode={darkMode}
-                setDarkMode={setDarkMode}
-              />
-
-              <RihalProject darkMode={darkMode} />
-            </>
+            <RihalProject darkMode={darkMode} />
           }
         />
 
-        {/* Faseelah Project Page */}
+        {/* FASEELAH PROJECT - NO NAVBAR */}
+
         <Route
           path="/projects/faseelah"
           element={
-            <>
-              <Navbar
-                darkMode={darkMode}
-                setDarkMode={setDarkMode}
-              />
-
-              <FaseelahProject darkMode={darkMode} />
-            </>
+            <FaseelahProject darkMode={darkMode} />
           }
         />
       </Routes>

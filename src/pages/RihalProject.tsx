@@ -1,5 +1,9 @@
-import { useState } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
+import { useEffect, useState } from 'react'
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+} from 'motion/react'
 import {
   ArrowLeft,
   ArrowRight,
@@ -19,7 +23,13 @@ type RihalProjectProps = {
   darkMode: boolean
 }
 
-const screenshots = [
+type Screenshot = {
+  src: string
+  en: string
+  ar: string
+}
+
+const screenshots: Screenshot[] = [
   {
     src: '/projects/rihal/home-trip-setup.jpg',
     en: 'Trip Setup',
@@ -47,6 +57,52 @@ const screenshots = [
   },
 ]
 
+const features = [
+  {
+    icon: Map,
+    en: 'Interactive Map',
+    ar: 'خريطة تفاعلية',
+    descriptionEn:
+      'Explore tourist destinations through an interactive map.',
+    descriptionAr:
+      'استكشاف الوجهات السياحية من خلال خريطة تفاعلية.',
+  },
+  {
+    icon: CalendarDays,
+    en: 'Trip Planning',
+    ar: 'تخطيط الرحلات',
+    descriptionEn:
+      'Browse personalized itineraries organized by day.',
+    descriptionAr:
+      'استعراض خطط رحلات مخصصة ومنظمة حسب الأيام.',
+  },
+  {
+    icon: Compass,
+    en: 'Instant Exploration',
+    ar: 'الاستكشاف اللحظي',
+    descriptionEn:
+      'Discover nearby attractions based on available time.',
+    descriptionAr:
+      'اكتشاف الأماكن القريبة بناءً على الوقت المتاح.',
+  },
+  {
+    icon: Smartphone,
+    en: 'Mobile Experience',
+    ar: 'تجربة الجوال',
+    descriptionEn:
+      'A mobile-friendly interface with intuitive navigation.',
+    descriptionAr:
+      'واجهة متوافقة مع الجوال وسهلة التنقل.',
+  },
+]
+
+const technologies = [
+  'Flutter',
+  'Dart',
+  'Interactive UI',
+  'Responsive Design',
+]
+
 export default function RihalProject({
   darkMode,
 }: RihalProjectProps) {
@@ -59,91 +115,133 @@ export default function RihalProject({
 
   const activeScreen = screenshots[activeIndex]
 
+  const fontFamily = isArabic
+    ? "'IBM Plex Sans Arabic', 'Noto Sans Arabic', sans-serif"
+    : "'Outfit', sans-serif"
+
+  const cardStyle = darkMode
+    ? 'border-white/[0.09] bg-white/[0.025]'
+    : 'border-[#171426]/[0.09] bg-white'
+
+  const secondaryText = darkMode
+    ? 'text-[#a5a3b9]'
+    : 'text-[#686477]'
+
   const nextImage = () => {
-    setActiveIndex((prev) => (prev + 1) % screenshots.length)
+    setActiveIndex(
+      (previous) => (previous + 1) % screenshots.length
+    )
   }
 
   const previousImage = () => {
     setActiveIndex(
-      (prev) => (prev - 1 + screenshots.length) % screenshots.length
+      (previous) =>
+        (previous - 1 + screenshots.length) %
+        screenshots.length
     )
   }
 
-  const features = [
-    {
-      icon: Map,
-      en: 'Interactive Map',
-      ar: 'خريطة تفاعلية',
-      descriptionEn:
-        'Explore tourist destinations through an interactive map.',
-      descriptionAr:
-        'استكشاف الوجهات السياحية من خلال خريطة تفاعلية.',
+  useEffect(() => {
+    if (!isFullscreen) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsFullscreen(false)
+      }
+
+      if (event.key === 'ArrowRight') {
+        setActiveIndex(
+          (previous) =>
+            (previous + 1) % screenshots.length
+        )
+      }
+
+      if (event.key === 'ArrowLeft') {
+        setActiveIndex(
+          (previous) =>
+            (previous - 1 + screenshots.length) %
+            screenshots.length
+        )
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isFullscreen])
+
+  const reveal = (delay = 0) => ({
+    initial: reduceMotion
+      ? false
+      : { opacity: 0, y: 20 },
+
+    whileInView: {
+      opacity: 1,
+      y: 0,
     },
-    {
-      icon: CalendarDays,
-      en: 'Trip Planning',
-      ar: 'تخطيط الرحلات',
-      descriptionEn:
-        'Browse personalized itineraries organized by day.',
-      descriptionAr:
-        'استعراض خطط رحلات مخصصة ومنظمة حسب الأيام.',
+
+    viewport: {
+      once: true,
+      amount: 0.15,
     },
-    {
-      icon: Compass,
-      en: 'Instant Exploration',
-      ar: 'الاستكشاف اللحظي',
-      descriptionEn:
-        'Discover nearby attractions based on available time.',
-      descriptionAr:
-        'اكتشاف الأماكن القريبة بناءً على الوقت المتاح.',
+
+    transition: {
+      duration: 0.6,
+      delay,
+      ease: [0.22, 1, 0.36, 1] as const,
     },
-    {
-      icon: Smartphone,
-      en: 'Mobile Experience',
-      ar: 'تجربة الجوال',
-      descriptionEn:
-        'A mobile-friendly interface with intuitive navigation.',
-      descriptionAr:
-        'واجهة متوافقة مع الجوال وسهلة التنقل.',
-    },
-  ]
+  })
 
   return (
     <main
+      dir={isArabic ? 'rtl' : 'ltr'}
       className={`min-h-screen ${
-        darkMode ? 'bg-[#090e1c] text-white' : 'bg-[#f8f9fd] text-slate-900'
+        darkMode
+          ? 'bg-[#090e1c] text-white'
+          : 'bg-[#f8f9fd] text-slate-900'
       }`}
+      style={{ fontFamily }}
     >
-      <div className="mx-auto max-w-7xl px-6 py-12 lg:px-12">
+      <div className="mx-auto max-w-7xl px-5 pb-16 pt-8 sm:px-8 lg:px-12">
 
-        {/* Back Button */}
+        {/* BACK TO PROJECTS */}
+
         <a
           href="/#projects"
-          className="mb-12 inline-flex items-center gap-3 text-sm font-medium text-violet-400 transition hover:text-violet-300"
+          className="mb-10 inline-flex items-center gap-2 text-[13px] font-medium text-violet-400 transition-colors hover:text-violet-300"
         >
-          {isArabic ? <ArrowRight size={18} /> : <ArrowLeft size={18} />}
-          {isArabic ? 'العودة إلى المشاريع' : 'Back to Projects'}
+          {isArabic ? (
+            <ArrowRight size={17} />
+          ) : (
+            <ArrowLeft size={17} />
+          )}
+
+          {isArabic
+            ? 'العودة إلى المشاريع'
+            : 'Back to Projects'}
         </a>
 
-        {/* Hero */}
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 35 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="mb-20"
-        >
-          <p className="mb-5 text-sm font-semibold uppercase tracking-[0.2em] text-violet-400">
-            {isArabic ? 'دراسة حالة · تطبيق تفاعلي' : 'CASE STUDY · INTERACTIVE APP'}
-          </p>
+        {/* PROJECT INTRODUCTION */}
 
-          <h1 className="text-6xl font-black tracking-tight md:text-8xl">
-            Rihal<span className="text-violet-500">.</span>
+        <motion.section
+          {...reveal()}
+          className="mb-14"
+        >
+          <h1
+            dir="ltr"
+            className="w-fit text-[clamp(3rem,6vw,5rem)] font-semibold leading-[1.15] tracking-[-0.06em]"
+          >
+            Rihal
           </h1>
 
           <p
-            className={`mt-7 max-w-3xl text-lg leading-9 ${
-              darkMode ? 'text-slate-400' : 'text-slate-600'
-            }`}
+            className={`mt-5 max-w-2xl text-[14px] leading-[2] sm:text-[15px] ${secondaryText}`}
           >
             {isArabic
               ? 'تجربة رقمية لاستكشاف الوجهات السياحية وتخطيط الرحلات بطريقة تفاعلية وسهلة الاستخدام.'
@@ -154,210 +252,402 @@ export default function RihalProject({
             href="https://rihal-fc413.web.app"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-9 inline-flex items-center gap-3 rounded-xl bg-violet-600 px-6 py-4 text-sm font-semibold text-white transition hover:bg-violet-500"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-3 text-[13px] font-semibold text-white transition-colors hover:bg-violet-500"
           >
-            {isArabic ? 'تجربة التطبيق' : 'Explore Live Application'}
-            <ArrowUpRight size={18} />
-          </a>
-        </motion.div>
+            {isArabic
+              ? 'تجربة التطبيق'
+              : 'Explore Live Application'}
 
-        {/* Screenshot Gallery */}
-        <section className="mb-28">
-          <div className="mb-10 flex flex-wrap items-end justify-between gap-5">
+            <ArrowUpRight size={17} />
+          </a>
+        </motion.section>
+
+        {/* INTERFACE GALLERY */}
+
+        <section className="mb-16">
+          <motion.div
+            {...reveal()}
+            className="mb-7 flex flex-wrap items-end justify-between gap-4"
+          >
             <div>
-              <p className="mb-3 text-sm font-semibold tracking-widest text-violet-400">
-                UI SHOWCASE
+              <p className="mb-3 text-[11px] font-semibold tracking-[0.16em] text-violet-400">
+                {isArabic
+                  ? 'معرض التصميم'
+                  : 'UI SHOWCASE'}
               </p>
-              <h2 className="text-3xl font-bold md:text-5xl">
-                {isArabic ? 'واجهات التطبيق' : 'Interface Gallery'}
+
+              <h2
+                className={`font-semibold ${
+                  isArabic
+                    ? 'text-[clamp(2rem,4vw,3.8rem)] leading-[1.5]'
+                    : 'text-[clamp(2.5rem,5vw,4.5rem)] leading-[1.12] tracking-[-0.055em]'
+                }`}
+              >
+                {isArabic
+                  ? 'واجهات التطبيق'
+                  : 'Interface Gallery'}
               </h2>
             </div>
 
-            <span className="text-sm text-slate-400">
-              {String(activeIndex + 1).padStart(2, '0')} /{' '}
+            <span
+              dir="ltr"
+              className={`text-[12px] font-medium ${secondaryText}`}
+            >
+              {String(activeIndex + 1).padStart(2, '0')}
+              {' / '}
               {String(screenshots.length).padStart(2, '0')}
             </span>
-          </div>
+          </motion.div>
 
-          <div
-            className={`relative overflow-hidden rounded-3xl border p-6 sm:p-12 ${
-              darkMode
-                ? 'border-white/10 bg-[#151b2c]'
-                : 'border-slate-200 bg-white'
-            }`}
+          <motion.div
+            {...reveal(0.1)}
+            className={`overflow-hidden rounded-2xl border p-4 sm:p-6 ${cardStyle}`}
           >
-            <div className="flex min-h-[440px] items-center justify-center sm:min-h-[600px]">
+            <div
+              className={`relative flex min-h-[300px] items-center justify-center overflow-hidden rounded-xl py-6 sm:min-h-[390px] ${
+                darkMode
+                  ? 'bg-[#101527]'
+                  : 'bg-[#f2f0fa]'
+              }`}
+            >
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.12),transparent_65%)]"
+              />
+
               <AnimatePresence mode="wait">
                 <motion.button
                   key={activeScreen.src}
                   type="button"
                   initial={
-                    reduceMotion ? false : { opacity: 0, x: 25, scale: 0.96 }
+                    reduceMotion
+                      ? false
+                      : {
+                          opacity: 0,
+                          y: 12,
+                          scale: 0.97,
+                        }
                   }
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                  }}
                   exit={
-                    reduceMotion ? undefined : { opacity: 0, x: -25 }
+                    reduceMotion
+                      ? undefined
+                      : {
+                          opacity: 0,
+                          y: -10,
+                        }
                   }
                   transition={{ duration: 0.3 }}
                   onClick={() => setIsFullscreen(true)}
-                  className="group relative"
-                  aria-label={isArabic ? 'تكبير الصورة' : 'Enlarge image'}
+                  aria-label={
+                    isArabic
+                      ? 'تكبير الصورة'
+                      : 'Enlarge image'
+                  }
+                  className="group relative z-10"
                 >
                   <img
                     src={activeScreen.src}
-                    alt={isArabic ? activeScreen.ar : activeScreen.en}
-                    className="max-h-[580px] w-auto max-w-full rounded-[24px] border-[5px] border-slate-800 shadow-2xl"
+                    alt={
+                      isArabic
+                        ? activeScreen.ar
+                        : activeScreen.en
+                    }
+                    className="block max-h-[320px] max-w-full rounded-[17px] border-[4px] border-[#252638] object-contain shadow-[0_15px_40px_rgba(0,0,0,0.3)] sm:max-h-[380px]"
                   />
 
-                  <span className="absolute bottom-5 right-5 rounded-xl bg-black/70 p-3 text-white opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
-                    <Maximize2 size={18} />
+                  <span className="absolute bottom-3 right-3 rounded-lg bg-black/70 p-2 text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
+                    <Maximize2 size={16} />
                   </span>
                 </motion.button>
               </AnimatePresence>
             </div>
 
-            <div className="mt-8 flex items-center justify-between gap-4">
+            <div className="mt-5 flex items-center justify-between gap-3">
               <button
                 type="button"
                 onClick={previousImage}
-                aria-label={isArabic ? 'الصورة السابقة' : 'Previous image'}
-                className="rounded-full border border-violet-500/30 p-3 text-violet-400 transition hover:bg-violet-500/10"
+                aria-label={
+                  isArabic
+                    ? 'الصورة السابقة'
+                    : 'Previous image'
+                }
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-violet-500/20 text-violet-400 transition-colors hover:bg-violet-500/10"
               >
-                <ChevronLeft size={22} />
+                <ChevronLeft size={19} />
               </button>
 
-              <p className="text-center text-sm font-medium">
-                {isArabic ? activeScreen.ar : activeScreen.en}
+              <p className="text-center text-[13px] font-medium">
+                {isArabic
+                  ? activeScreen.ar
+                  : activeScreen.en}
               </p>
 
               <button
                 type="button"
                 onClick={nextImage}
-                aria-label={isArabic ? 'الصورة التالية' : 'Next image'}
-                className="rounded-full border border-violet-500/30 p-3 text-violet-400 transition hover:bg-violet-500/10"
+                aria-label={
+                  isArabic
+                    ? 'الصورة التالية'
+                    : 'Next image'
+                }
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-violet-500/20 text-violet-400 transition-colors hover:bg-violet-500/10"
               >
-                <ChevronRight size={22} />
+                <ChevronRight size={19} />
               </button>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Thumbnails */}
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            {screenshots.map((screen, index) => (
-              <button
-                key={screen.src}
-                type="button"
-                onClick={() => setActiveIndex(index)}
-                aria-label={isArabic ? screen.ar : screen.en}
-                aria-pressed={activeIndex === index}
-                className={`overflow-hidden rounded-xl border-2 transition ${
-                  activeIndex === index
-                    ? 'border-violet-500'
-                    : 'border-transparent opacity-60 hover:opacity-100'
-                }`}
-              >
-                <img
-                  src={screen.src}
-                  alt=""
-                  loading="lazy"
-                  className="h-24 w-16 object-cover object-top"
-                />
-              </button>
-            ))}
-          </div>
-        </section>
+          {/* THUMBNAILS */}
 
-        {/* Features */}
-        <section className="mb-24">
-          <p className="mb-4 text-sm font-semibold tracking-widest text-violet-400">
-            DESIGN HIGHLIGHTS
-          </p>
+          <div className="mt-4 flex flex-wrap justify-center gap-2.5">
+            {screenshots.map((screen, index) => {
+              const isActive = activeIndex === index
 
-          <h2 className="mb-12 text-3xl font-bold md:text-5xl">
-            {isArabic ? 'مميزات الواجهات' : 'Experience Highlights'}
-          </h2>
-
-          <div className="grid gap-5 md:grid-cols-2">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.en}
-                initial={reduceMotion ? false : { opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.08 }}
-                className={`rounded-2xl border p-7 ${
-                  darkMode
-                    ? 'border-white/10 bg-[#151b2c]'
-                    : 'border-slate-200 bg-white'
-                }`}
-              >
-                <feature.icon className="mb-5 text-violet-400" size={26} />
-
-                <h3 className="mb-3 text-xl font-semibold">
-                  {isArabic ? feature.ar : feature.en}
-                </h3>
-
-                <p className="text-sm leading-7 text-slate-400">
-                  {isArabic ? feature.descriptionAr : feature.descriptionEn}
-                </p>
-              </motion.div>
-            ))}
+              return (
+                <button
+                  key={screen.src}
+                  type="button"
+                  onClick={() => setActiveIndex(index)}
+                  aria-label={
+                    isArabic ? screen.ar : screen.en
+                  }
+                  aria-pressed={isActive}
+                  className={`overflow-hidden rounded-lg border-2 transition-all duration-300 ${
+                    isActive
+                      ? 'border-violet-500 opacity-100'
+                      : 'border-transparent opacity-55 hover:opacity-100'
+                  }`}
+                >
+                  <img
+                    src={screen.src}
+                    alt=""
+                    loading="lazy"
+                    className="h-[76px] w-[52px] object-cover object-top sm:h-[88px] sm:w-[60px]"
+                  />
+                </button>
+              )
+            })}
           </div>
         </section>
 
-        {/* Technology */}
-        <section className="pb-20">
-          <p className="mb-4 text-sm font-semibold tracking-widest text-violet-400">
-            TECHNOLOGIES
-          </p>
+        {/* EXPERIENCE HIGHLIGHTS */}
 
-          <h2 className="mb-8 text-3xl font-bold md:text-5xl">
-            {isArabic ? 'التقنيات' : 'Technologies'}
-          </h2>
+        <section className="mb-16">
+          <motion.div
+            {...reveal()}
+            className="mb-8"
+          >
+            <p className="mb-3 text-[11px] font-semibold tracking-[0.16em] text-violet-400">
+              {isArabic
+                ? 'أبرز المميزات'
+                : 'DESIGN HIGHLIGHTS'}
+            </p>
 
-          <div className="flex flex-wrap gap-3">
-            {['Flutter', 'Dart', 'Interactive UI', 'Responsive Design'].map(
-              (tech) => (
+            <h2
+              className={`font-semibold ${
+                isArabic
+                  ? 'text-[clamp(2rem,4vw,3.8rem)] leading-[1.5]'
+                  : 'text-[clamp(2.5rem,5vw,4.5rem)] leading-[1.12] tracking-[-0.055em]'
+              }`}
+            >
+              {isArabic
+                ? 'مميزات الواجهات'
+                : 'Experience Highlights'}
+            </h2>
+          </motion.div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {features.map((feature, index) => {
+              const Icon = feature.icon
+
+              return (
+                <motion.article
+                  key={feature.en}
+                  {...reveal(index * 0.08)}
+                  className={`flex items-start gap-4 rounded-2xl border p-5 transition-colors duration-300 sm:p-6 ${
+                    darkMode
+                      ? 'border-white/[0.09] bg-white/[0.025] hover:border-violet-500/30'
+                      : 'border-[#171426]/[0.09] bg-white hover:border-violet-400/40'
+                  }`}
+                >
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+                    <Icon size={21} strokeWidth={1.7} />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-[17px] font-semibold leading-[1.6]">
+                      {isArabic
+                        ? feature.ar
+                        : feature.en}
+                    </h3>
+
+                    <p
+                      className={`mt-1.5 text-[13px] leading-[1.9] ${secondaryText}`}
+                    >
+                      {isArabic
+                        ? feature.descriptionAr
+                        : feature.descriptionEn}
+                    </p>
+                  </div>
+                </motion.article>
+              )
+            })}
+          </div>
+        </section>
+
+        {/* TECHNOLOGIES */}
+
+        <section className="pb-6">
+          <motion.div
+            {...reveal()}
+            className="mb-7"
+          >
+            <p className="mb-3 text-[11px] font-semibold tracking-[0.16em] text-violet-400">
+              {isArabic
+                ? 'الأدوات والتقنيات'
+                : 'TOOLS & TECHNOLOGIES'}
+            </p>
+
+            <h2
+              className={`font-semibold ${
+                isArabic
+                  ? 'text-[clamp(2rem,4vw,3.8rem)] leading-[1.5]'
+                  : 'text-[clamp(2.5rem,5vw,4.5rem)] leading-[1.12] tracking-[-0.055em]'
+              }`}
+            >
+              {isArabic
+                ? 'التقنيات'
+                : 'Technologies'}
+            </h2>
+          </motion.div>
+
+          <motion.div
+            {...reveal(0.1)}
+            className={`rounded-2xl border p-5 sm:p-6 ${cardStyle}`}
+          >
+            <div className="flex flex-wrap gap-2">
+              {technologies.map((tech) => (
                 <span
                   key={tech}
-                  className="rounded-xl border border-violet-500/20 bg-violet-500/5 px-5 py-3 text-sm font-medium text-violet-400"
+                  dir="ltr"
+                  className={`rounded-lg border px-3 py-1.5 text-[12px] font-medium ${
+                    darkMode
+                      ? 'border-white/[0.09] bg-white/[0.035] text-[#bcb9cf]'
+                      : 'border-[#171426]/[0.09] bg-[#f7f6fb] text-[#625d74]'
+                  }`}
                 >
                   {tech}
                 </span>
-              )
-            )}
-          </div>
+              ))}
+            </div>
+          </motion.div>
         </section>
       </div>
 
-      {/* Image Preview Overlay */}
+      {/* FULLSCREEN IMAGE VIEWER */}
+
       <AnimatePresence>
         {isFullscreen && (
           <motion.div
             role="dialog"
             aria-modal="true"
-            aria-label={isArabic ? 'معاينة الصورة' : 'Image preview'}
+            aria-label={
+              isArabic
+                ? 'معاينة الصورة'
+                : 'Image preview'
+            }
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-6"
+            transition={{ duration: 0.2 }}
             onClick={() => setIsFullscreen(false)}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-5"
           >
             <button
               type="button"
               onClick={() => setIsFullscreen(false)}
-              aria-label={isArabic ? 'إغلاق' : 'Close'}
-              className="absolute right-6 top-6 rounded-full border border-white/20 p-3 text-white"
+              aria-label={
+                isArabic ? 'إغلاق' : 'Close'
+              }
+              className="absolute right-5 top-5 z-20 flex h-11 w-11 items-center justify-center rounded-xl border border-white/20 text-white transition-colors hover:bg-white/10"
             >
-              <X size={24} />
+              <X size={21} />
             </button>
 
-            <img
-              src={activeScreen.src}
-              alt={isArabic ? activeScreen.ar : activeScreen.en}
-              className="max-h-[85vh] max-w-full rounded-xl object-contain"
-              onClick={(event) => event.stopPropagation()}
-            />
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation()
+                previousImage()
+              }}
+              aria-label={
+                isArabic
+                  ? 'الصورة السابقة'
+                  : 'Previous image'
+              }
+              className="absolute left-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-xl border border-white/20 bg-black/40 text-white transition-colors hover:bg-white/10 sm:left-6"
+            >
+              <ChevronLeft size={21} />
+            </button>
+
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={activeScreen.src}
+                src={activeScreen.src}
+                alt={
+                  isArabic
+                    ? activeScreen.ar
+                    : activeScreen.en
+                }
+                initial={
+                  reduceMotion
+                    ? false
+                    : { opacity: 0, scale: 0.96 }
+                }
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                }}
+                exit={
+                  reduceMotion
+                    ? undefined
+                    : { opacity: 0, scale: 0.96 }
+                }
+                transition={{ duration: 0.2 }}
+                onClick={(event) => event.stopPropagation()}
+                className="max-h-[85vh] max-w-[calc(100vw-110px)] rounded-xl object-contain sm:max-w-[80vw]"
+              />
+            </AnimatePresence>
+
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation()
+                nextImage()
+              }}
+              aria-label={
+                isArabic
+                  ? 'الصورة التالية'
+                  : 'Next image'
+              }
+              className="absolute right-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-xl border border-white/20 bg-black/40 text-white transition-colors hover:bg-white/10 sm:right-6"
+            >
+              <ChevronRight size={21} />
+            </button>
+
+            <div
+              dir="ltr"
+              className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[12px] font-medium text-white/70"
+            >
+              {String(activeIndex + 1).padStart(2, '0')}
+              {' / '}
+              {String(screenshots.length).padStart(2, '0')}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

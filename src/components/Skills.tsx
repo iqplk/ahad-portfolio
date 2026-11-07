@@ -1,11 +1,5 @@
 import { motion, useReducedMotion } from 'motion/react'
-import {
-  Code2,
-  Palette,
-  Wrench,
-  Sparkles,
-  ArrowUpRight,
-} from 'lucide-react'
+import { Code2, Palette, Wrench } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 type SkillsProps = {
@@ -15,25 +9,27 @@ type SkillsProps = {
 type Category = {
   id: string
   icon: typeof Code2
-  number: string
   title: string
   titleAr: string
   description: string
   descriptionAr: string
   skills: string[]
-  accent: 'violet' | 'pink' | 'cyan'
 }
 
 export default function Skills({ darkMode }: SkillsProps) {
   const { i18n } = useTranslation()
+
   const isArabic = i18n.resolvedLanguage === 'ar'
   const reduceMotion = useReducedMotion()
+
+  const fontFamily = isArabic
+    ? "'IBM Plex Sans Arabic', 'Noto Sans Arabic', sans-serif"
+    : "'Outfit', sans-serif"
 
   const categories: Category[] = [
     {
       id: 'frontend',
       icon: Code2,
-      number: '01',
       title: 'Frontend Development',
       titleAr: 'تطوير الواجهات الأمامية',
       description:
@@ -48,227 +44,171 @@ export default function Skills({ darkMode }: SkillsProps) {
         'TypeScript',
         'Tailwind CSS',
       ],
-      accent: 'violet',
     },
     {
       id: 'design',
       icon: Palette,
-      number: '02',
-      title: 'Mobile Development & UI/UX',
-      titleAr: 'تطوير التطبيقات وتصميم الواجهات',
+      title: 'UI/UX Design',
+      titleAr: 'تصميم واجهات وتجربة المستخدم',
       description:
-        'Developing mobile applications and designing intuitive user experiences.',
+        'Designing intuitive, visually engaging digital experiences.',
       descriptionAr:
-        'تطوير تطبيقات الجوال وتصميم واجهات وتجارب مستخدم جذابة وسهلة الاستخدام.',
-      skills: [
-        'Flutter',
-        'Dart',
-        'Figma',
-        'UI Design',
-        'UX Design',
-      ],
-      accent: 'pink',
+        'تصميم واجهات جذابة وتجارب استخدام واضحة وسهلة.',
+      skills: ['Figma', 'UI Design', 'UX Design'],
     },
     {
       id: 'tools',
       icon: Wrench,
-      number: '03',
       title: 'Development Tools',
       titleAr: 'أدوات التطوير',
       description:
-        'Tools I use to build, manage, and organize software projects.',
+        'Tools I use to develop and organize my projects.',
       descriptionAr:
-        'أدوات أستخدمها لتطوير المشاريع البرمجية وإدارتها وتنظيمها.',
-      skills: [
-        'Git',
-        'GitHub',
-        'VS Code',
-      ],
-      accent: 'cyan',
+        'الأدوات التي أستخدمها في تطوير المشاريع وتنظيمها.',
+      skills: ['Git', 'GitHub', 'VS Code'],
     },
   ]
 
-  const accentStyles = {
-    violet: {
-      icon: 'text-violet-400 bg-violet-500/10',
-      border: 'hover:border-violet-500/40',
-      badge:
-        'hover:border-violet-400/40 hover:text-violet-400',
-      glow: 'bg-violet-500/10',
+  const reveal = (delay = 0) => ({
+    initial: reduceMotion
+      ? false
+      : { opacity: 0, y: 22 },
+
+    whileInView: {
+      opacity: 1,
+      y: 0,
     },
-    pink: {
-      icon: 'text-pink-400 bg-pink-500/10',
-      border: 'hover:border-pink-500/40',
-      badge:
-        'hover:border-pink-400/40 hover:text-pink-400',
-      glow: 'bg-pink-500/10',
+
+    viewport: {
+      once: true,
+      amount: 0.15,
     },
-    cyan: {
-      icon: 'text-cyan-400 bg-cyan-500/10',
-      border: 'hover:border-cyan-500/40',
-      badge:
-        'hover:border-cyan-400/40 hover:text-cyan-400',
-      glow: 'bg-cyan-500/10',
+
+    transition: {
+      duration: 0.6,
+      delay,
+      ease: [0.22, 1, 0.36, 1] as const,
     },
-  }
+  })
 
   return (
     <section
       id="skills"
-      className="relative mx-auto max-w-7xl scroll-mt-24 px-6 py-28 lg:px-12"
+      dir={isArabic ? 'rtl' : 'ltr'}
+      className="relative mx-auto max-w-7xl scroll-mt-24 px-5 py-16 sm:px-8 sm:py-20 lg:px-12"
+      style={{ fontFamily }}
     >
-      {/* Section Heading */}
+      {/* SECTION HEADER */}
+
       <motion.div
-        initial={
-          reduceMotion
-            ? false
-            : { opacity: 0, y: 30 }
-        }
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="mb-14"
+        {...reveal()}
+        className="mb-10 max-w-3xl"
       >
-        <div className="mb-4 flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.25em] text-violet-400">
-          <Sparkles size={17} />
+        <p className="mb-4 text-[11px] font-semibold tracking-[0.2em] text-violet-400">
           {isArabic ? 'مهاراتي التقنية' : 'MY EXPERTISE'}
-        </div>
+        </p>
 
-        <h2 className="text-4xl font-bold tracking-tight md:text-6xl">
-          {isArabic
-            ? 'المهارات والتقنيات'
-            : 'Skills & Technologies'}
-
-          <span className="text-violet-500">.</span>
-        </h2>
-
-        <p
-          className={`mt-6 max-w-2xl text-base leading-8 ${
-            darkMode
-              ? 'text-slate-400'
-              : 'text-slate-600'
+        <h2
+          className={`font-semibold ${
+            isArabic
+              ? 'text-[clamp(2rem,4vw,3.8rem)] leading-[1.5]'
+              : 'text-[clamp(2.5rem,5vw,4.5rem)] leading-[1.12] tracking-[-0.055em]'
           }`}
         >
           {isArabic
-            ? 'مجموعة من التقنيات والأدوات التي أستخدمها لتطوير التطبيقات وتصميم واجهات مستخدم حديثة وتفاعلية.'
-            : 'A selection of technologies and tools I use to develop applications and create modern, interactive user interfaces.'}
+            ? 'المهارات والتقنيات'
+            : 'Skills & Technologies'}
+        </h2>
+
+        <p
+          className={`mt-5 max-w-2xl text-[14px] leading-[2] sm:text-[15px] ${
+            darkMode
+              ? 'text-[#a5a3b9]'
+              : 'text-[#686477]'
+          }`}
+        >
+          {isArabic
+            ? 'مجموعة من التقنيات والأدوات التي أستخدمها في تطوير الواجهات وتصميم تجارب مستخدم حديثة وتفاعلية.'
+            : 'A selection of technologies and tools I use to develop modern interfaces and design engaging user experiences.'}
         </p>
       </motion.div>
 
-      {/* Skill Categories */}
-      <div className="grid items-stretch gap-6 lg:grid-cols-3">
+      {/* SKILLS CARDS — SAME STYLE AS EDUCATION */}
+
+      <div className="grid items-start gap-4 md:grid-cols-2">
         {categories.map((category, index) => {
           const Icon = category.icon
-          const styles = accentStyles[category.accent]
 
           return (
             <motion.article
               key={category.id}
-              initial={
-                reduceMotion
-                  ? false
-                  : { opacity: 0, y: 35 }
-              }
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{
-                once: true,
-                amount: 0.15,
-              }}
-              transition={{
-                duration: 0.6,
-                delay: index * 0.12,
-              }}
-              whileHover={
-                reduceMotion
-                  ? undefined
-                  : { y: -7 }
-              }
-              className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border p-7 transition-colors duration-300 sm:p-8 ${
+              {...reveal(0.1 + index * 0.1)}
+              className={`relative rounded-2xl border p-5 transition-colors duration-300 sm:p-6 ${
                 darkMode
-                  ? 'border-white/10 bg-[#151b2c]/70'
-                  : 'border-slate-200 bg-white'
-              } ${styles.border}`}
+                  ? 'border-white/[0.09] bg-white/[0.025] hover:border-violet-500/30'
+                  : 'border-[#171426]/[0.09] bg-white hover:border-violet-400/40'
+              }`}
             >
-              {/* Background Glow */}
-              <div
-                className={`pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full blur-3xl ${styles.glow}`}
-              />
+              {/* ICON AND CONTENT */}
 
-              {/* Header */}
-              <div className="relative flex items-start justify-between">
-                <div
-                  className={`flex h-14 w-14 items-center justify-center rounded-2xl ${styles.icon}`}
-                >
-                  <Icon size={25} />
+              <div className="flex items-start gap-4">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400">
+                  <Icon size={21} strokeWidth={1.7} />
                 </div>
 
-                <span
-                  className={`text-sm font-medium ${
-                    darkMode
-                      ? 'text-slate-600'
-                      : 'text-slate-400'
-                  }`}
-                >
-                  {category.number}
-                </span>
+                <div className="min-w-0 flex-1">
+                  <h3
+                    className={`font-semibold ${
+                      isArabic
+                        ? 'text-[17px] leading-[1.9]'
+                        : 'text-[18px] leading-[1.5]'
+                    }`}
+                  >
+                    {isArabic
+                      ? category.titleAr
+                      : category.title}
+                  </h3>
+
+                  <p
+                    className={`mt-2 text-[13px] leading-[1.9] ${
+                      darkMode
+                        ? 'text-[#a5a3b9]'
+                        : 'text-[#686477]'
+                    }`}
+                  >
+                    {isArabic
+                      ? category.descriptionAr
+                      : category.description}
+                  </p>
+                </div>
               </div>
 
-              {/* Content */}
-              <div className="relative mt-9">
-                <h3 className="text-xl font-bold tracking-tight">
-                  {isArabic
-                    ? category.titleAr
-                    : category.title}
-                </h3>
+              {/* DIVIDER */}
 
-                <p
-                  className={`mt-3 min-h-[56px] text-sm leading-7 ${
-                    darkMode
-                      ? 'text-slate-400'
-                      : 'text-slate-600'
-                  }`}
-                >
-                  {isArabic
-                    ? category.descriptionAr
-                    : category.description}
-                </p>
-              </div>
-
-              {/* Divider */}
               <div
-                className={`my-7 h-px ${
+                className={`my-5 h-px ${
                   darkMode
-                    ? 'bg-white/10'
-                    : 'bg-slate-200'
+                    ? 'bg-white/[0.08]'
+                    : 'bg-[#171426]/[0.08]'
                 }`}
               />
 
-              {/* Skills */}
-              <div className="relative flex flex-wrap gap-2">
+              {/* TECHNOLOGIES */}
+
+              <div className="flex flex-wrap gap-2">
                 {category.skills.map((skill) => (
                   <span
                     key={skill}
-                    className={`rounded-xl border px-3.5 py-2.5 text-sm font-semibold transition-all duration-300 ${
+                    dir="ltr"
+                    className={`inline-flex items-center rounded-lg border px-3 py-1.5 text-[12px] font-medium transition-colors duration-300 ${
                       darkMode
-                        ? 'border-white/10 bg-white/5 text-slate-300'
-                        : 'border-slate-200 bg-slate-50 text-slate-700'
-                    } ${styles.badge}`}
+                        ? 'border-white/[0.09] bg-white/[0.035] text-[#bcb9cf]'
+                        : 'border-[#171426]/[0.09] bg-[#f7f6fb] text-[#625d74]'
+                    }`}
                   >
                     {skill}
                   </span>
                 ))}
-              </div>
-
-              {/* Bottom Icon */}
-              <div className="relative mt-auto flex justify-end pt-8">
-                <ArrowUpRight
-                  size={19}
-                  className={`transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 ${
-                    darkMode
-                      ? 'text-slate-600'
-                      : 'text-slate-400'
-                  }`}
-                />
               </div>
             </motion.article>
           )
